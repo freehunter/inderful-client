@@ -1,13 +1,14 @@
 import React, { useRef, useState } from "react";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
-import { API } from "aws-amplify";
 import config from "../config";
 import "./NewNote.css";
+import { API } from "aws-amplify";
 
 export default function NewNote(props) {
   const file = useRef(null);
   const [content, setContent] = useState("");
+  const [content2, setContent2] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   function validateForm() {
@@ -17,22 +18,17 @@ export default function NewNote(props) {
   function handleFileChange(event) {
     file.current = event.target.files[0];
   }
-
+  
   async function handleSubmit(event) {
     event.preventDefault();
-  
-    if (file.current && file.current.size > config.MAX_ATTACHMENT_SIZE) {
-      alert(
-        `Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE /
-          1000000} MB.`
-      );
-      return;
-    }
   
     setIsLoading(true);
   
     try {
-      await createNote({ content });
+      const happy = content2
+      console.log(happy)
+  
+      await createNote({ content, happy });
       props.history.push("/");
     } catch (e) {
       alert(e);
@@ -50,16 +46,23 @@ export default function NewNote(props) {
     <div className="NewNote">
       <form onSubmit={handleSubmit}>
         <FormGroup controlId="content">
+        <ControlLabel>What city did you spend most of the day in?</ControlLabel>
           <FormControl
             value={content}
             componentClass="textarea"
             onChange={e => setContent(e.target.value)}
           />
         </FormGroup>
-        <FormGroup controlId="file">
-          <ControlLabel>Attachment</ControlLabel>
-          <FormControl onChange={handleFileChange} type="file" />
+        
+        <FormGroup controlId="content">
+        <ControlLabel>Were you generally happy today?</ControlLabel>
+          <FormControl
+            value={content2}
+            componentClass="textarea"
+            onChange={e2 => setContent2(e2.target.value)}
+          />
         </FormGroup>
+
         <LoaderButton
           block
           type="submit"
